@@ -84,7 +84,8 @@ function App() {
 
   return (
     <div className=" bg-black">
-      <div className=" text-center font-extrabold text-4xl text-white bg-emerald-500 py-5">
+      <div className={" text-center font-extrabold text-4xl text-white py-5 " + (result !== 'correct' && ' bg-emerald-500')}
+          style={{backgroundColor: result === 'correct' && colorPallete[kingColorIndex].rgb}}>
         REACT COLOR PICKER GAME
         <br />
         <span className=" text-5xl font-semibold uppercase">
