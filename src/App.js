@@ -1,7 +1,16 @@
 import { useEffect, useState } from "react";
+import {useDispatch, useSelector} from 'react-redux'
 import ColorChoice from "./components/ColorChoice";
+import { addScore } from "./Redux/Actions/AddScoreAction";
+import { resetScore } from "./Redux/Actions/ResetScoreAction";
+import { setHighScore } from "./Redux/Actions/SetHighScoreAction";
 
 function App() {
+  const currentScore = useSelector(state => state.currScore);
+  const highScore = useSelector(state => state.highScore);
+  const playerHistory = useSelector(state => state.playeHistory);
+  const dispatch = useDispatch();
+
   const [currDifficultyLvl, setCurrDifficultyLvl] = useState();
   const [colorPallete, setColorPallete] = useState();
   const [kingColorIndex, setKingColorIndex] = useState();
@@ -14,11 +23,13 @@ function App() {
     setKingColorIndex(Math.floor(Math.random() * currDifficultyLvl));
     setResult("neutral");
   }, []);
+  
 
   const difficulty = {
     easyLvl: 3,
     hardLvl: 6,
   };
+
 
   const rndColorGen = () => {
     let red = Math.floor(Math.random() * 256);
@@ -45,8 +56,14 @@ function App() {
   const colorClickHandler = (status) => {
     if (status === "wrong") {
       setResult("wrong");
+      if (currentScore > highScore){
+        dispatch(setHighScore(currentScore));
+      }
+      dispatch(resetScore(currentScore));
     } else if (status === "correct") {
       setResult("correct");
+      dispatch(addScore(currentScore));
+      setTimeout(resetHandler, 1500);
     }
   };
 
@@ -64,6 +81,7 @@ function App() {
     setCurrDifficultyLvl(difficulty.hardLvl);
   };
 
+
   return (
     <div className=" bg-black">
       <div className=" text-center font-extrabold text-4xl text-white bg-emerald-500 py-5">
@@ -79,14 +97,21 @@ function App() {
           className=" mr-32 p-1 hover:bg-emerald-700 rounded-md cursor-pointer"
           onClick={resetHandler}
         >
-          RESET ?
+          RESET COLOR PALLETE?
         </div>
-        <div className=" mr-32 p-1">
+        <div
+          className={
+            " mr-32 p-1 rounded-md " +
+            (result === "correct"
+              ? " text-lime-500 bg-white"
+              : result === "wrong" && " text-red-600 bg-white")
+          }
+        >
           {result === "neutral"
             ? "RESULT"
             : result === "wrong"
             ? "WRONG ANSWER!"
-            : result === "correct" && "CORRECT!"}
+            : result === "correct" && "CORRECT ANSWER!"}
         </div>
         <div className="flex justify-between">
           <div
@@ -112,6 +137,12 @@ function App() {
             HARD
           </div>
         </div>
+      </div>
+
+      <div className="flex font-black text-black bg-white justify-around py-2 px-20 align-middle ">
+        <div>Current Score: {currentScore}</div>
+        <div><button>Last Color Clicked: {playerHistory}</button></div>
+        <div>Previous High Score: {highScore}</div>
       </div>
 
       <ColorChoice

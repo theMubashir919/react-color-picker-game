@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
+import {useDispatch} from 'react-redux'
+import { addHistory } from "../Redux/Actions/AddHistoryAction";
+
 
 const ColorChoice = ({colorPallete, kingColorIndex, onColorClick, resetFlag, currDifficultyLvl}) => {
   const [clickStatus, setClickStatus] = useState();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setClickStatus(new Array(currDifficultyLvl).fill(0));
@@ -12,6 +16,8 @@ const ColorChoice = ({colorPallete, kingColorIndex, onColorClick, resetFlag, cur
   }, [resetFlag]);
 
   const onClickHandler = (key) => {
+    dispatch(addHistory(colorPallete[key].rgb));
+
     if (key !== kingColorIndex) {
       setClickStatus((prevState) => {
         prevState[key] = 2;
